@@ -15,10 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Unit\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\TddDemo.Domain\TddDemo.Domain.csproj" />
     <ProjectReference Include="..\TddDemo.Web\TddDemo.Web.csproj" />
   </ItemGroup>
 

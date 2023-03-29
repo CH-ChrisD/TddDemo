@@ -10,5 +10,10 @@
             await Task.Delay(100);
             return "Hello world!";
         }
+
+        internal async Task CreateBooks()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

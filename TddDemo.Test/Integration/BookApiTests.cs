@@ -1,6 +1,9 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NUnit.Framework;
+using System.Net.Http.Json;
+using System.Text.Json;
+using TddDemo.Domain;
 
 namespace TddDemo.Test.Integration
 {
@@ -36,6 +39,50 @@ namespace TddDemo.Test.Integration
             // Assert
             var result = await response.Content.ReadAsStringAsync();
             result.Should().BeEquivalentTo("Hello World!");
+        }
+
+        [Test]
+        public async Task WhenISearchForAuthorJohnSteinbeck_ThenIShouldSeeBookOfMiceAndMen()
+        {
+            // Arrange
+            var mobyDick = new Book
+            {
+                Title = "Moby Dick",
+                Author = "Herman Melville",
+                PublicYear = 1851,
+            };
+            var ofMiceAndMen = new Book
+            {
+                Title = "Of Mice and Men",
+                Author = "John Steinbeck",
+                PublicYear = 1937,
+            };
+
+            var books = new List<Book>
+            {
+                mobyDick,
+                ofMiceAndMen
+            };
+
+            using var httpClient = _factory.CreateClient();
+
+            var response = await httpClient.PostAsJsonAsync("/add_books", books);
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+
+            // Act
+            var searchQuery = new SearchQuery()
+            {
+                Author = "John Steinbeck"
+            };
+            var result = await httpClient.PostAsJsonAsync("/books", searchQuery);
+
+            // Assert 
+            result.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+
+            var resultJson = await result.Content.ReadAsStringAsync();
+            var booksResult = JsonSerializer.Deserialize<Book[]>(resultJson);
+
+            booksResult.Should().Contain(book => book.Title == "Of Mice and Men");
         }
     }
 }
