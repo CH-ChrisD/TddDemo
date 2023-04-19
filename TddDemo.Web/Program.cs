@@ -1,3 +1,4 @@
+using TddDemo.Domain;
 using TddDemo.Web.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +17,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-var booksEndpoint = new Books();
+var bookService = new BookService();
+var booksEndpoint = new Books(bookService);
 
 app.MapGet("/hello_world", booksEndpoint.HelloWorld)
    .WithName(Books.Name)
